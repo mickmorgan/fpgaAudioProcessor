@@ -37,10 +37,6 @@ if f.getnchannels() != 1:
     print "Invalid selection: file must be mono"
     print "Exiting program..."
     sys.exit(0)
-##if f.getframerate() != 8000:
-##    print "Invalid selection: file must have sampling rate of 8000 Hz"
-##    print "Exiting program..."
-    sys.exit(0)
 if f.getsampwidth() != 1:
     print "Invalid selection: file must be 8 bit PCM"
     print "Exiting program..."
@@ -62,40 +58,22 @@ for i in xrange (0, numOfFrames):
 
 f.close()
 
-# print samples in binary format:
-# samples stored as little endian unsigned bytes (interpreted as ASCII if printed directly) in fData
-# struct.unpack() converts this to a tuple containing the value of that byte as an integer
-# format() takes the 0th element of that tuple (an integer) and converts it to a binary byte with the format code "08b"
-#for j in xrange (0, numOfFrames):
-#    RTS_Data.insert(j, format(struct.unpack('B', fData[j])[0], "08b"))
-
 # Initialise serial port
-ser = serial.Serial('COM7', 115200)
+ser = serial.Serial('COM11', 115200)
 print "Outgoing serial port:", ser.name, "\n"
-#serIn = serial.Serial('COM12', 9600)
 
-# Pipe out audio samples on serOut, receive processed samples on serIn
+# Pipe out audio samples on serial port
 print "Transmitting audio data to FPGA device...\n"
 for i in xrange (0, numOfFrames):
-#    ser.write(RTS_Data[i])
     ser.write(fData[i])
-#    procData.insert(i, ser.read(8))
-    print i, "of", numOfFrames
-print "\n File transfer successful!\n"
+print "File transfer successful!\n"
+
+# Attempt read from serial port
+print "Reading from serial port"
+for i in xrange (0, numOfFrames):
+    procData.insert(i, ser.read(8))
+print "Done"
 ser.close()
-#serIn.close()
-
-# Initializse incoming serial port
-#serIn = serial.Serial('COM12', 9600)
-#print "Incoming serial port:", serIn.name, "\n"
-#serIn.close()
-
-# Store incoming processed samples in procData
-#for i in xrange (0, 1000):
-#    procData.insert(ser.read(8))
-#    print i
-#print "Done"
-#ser.close()
 
 
 
